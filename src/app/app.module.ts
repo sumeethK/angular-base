@@ -5,12 +5,14 @@ import { HttpModule } from '@angular/http';
 
 import { AppComponent } from './app.component';
 import { TodosComponent } from 'app/todos/todos.component';
+import { SearchPipe } from 'app/todos/search.pipe';
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    TodosComponent
+    TodosComponent,
+    SearchPipe
   ],
   imports: [
     BrowserModule,

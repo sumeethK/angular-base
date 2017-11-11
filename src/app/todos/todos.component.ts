@@ -2,18 +2,20 @@ import { Component, OnInit } from '@angular/core';
 import { TodoService } from 'app/todos/todo.service';
 import { TodoItem } from 'app/todos/model/todo-item';
 import { Status } from 'app/todos/model/task-status';
+import { NgModule } from '@angular/core/src/metadata/ng_module';
+
 
 @Component({
   selector: 'app-todos',
   templateUrl: './todos.component.html',
   styleUrls: ['./todos.component.css'],
-  providers: [TodoService]
+  providers: [TodoService],
 })
 export class TodosComponent implements OnInit {
   todosList: TodoItem[];
   todo: TodoItem;
   tmpId: number;
-  tempText: string = "Enter a new task";
+  tempText: string ;
   appState: AppStatus = AppStatus.ADD;
   oldText: string;
   constructor(private todoService: TodoService) {} 
@@ -86,6 +88,7 @@ export class TodosComponent implements OnInit {
 
   disableEditMode() {
     this.appState = AppStatus.ADD;
+    this.ngOnInit();
   }
 
   refresh(){
