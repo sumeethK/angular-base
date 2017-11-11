@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { TodoService } from 'app/todos/todo.service';
-
+import { TodoItem } from 'app/todos/model/todo-item';
+import { Status } from 'app/todos/model/task-status';
 
 @Component({
   selector: 'app-todos',
@@ -9,83 +10,113 @@ import { TodoService } from 'app/todos/todo.service';
   providers: [TodoService]
 })
 export class TodosComponent implements OnInit {
-  todos;
-  tmpId : number;
+  todosList: TodoItem[];
+  todo: TodoItem;
+  tmpId: number;
   tempText: string = "Enter a new task";
-  appState: string = "DEFAULT";
+  appState: AppStatus = AppStatus.ADD;
   oldText: string;
-  constructor(private todoService: TodoService) { }
+  constructor(private todoService: TodoService) {} 
+
+  initializeTodo(){
+    this.todo =   {
+      id : this.nextId(),
+      task: {
+        name: "Excersise"
+        , description: "Excerise is healthy habit"
+        , creationDate: new Date()
+        , targetDate: new Date()
+        , status:  Status.IN_PROGRESS
+        , comments: "Planning to start today"
+
+      },
+      creator: "Admin",
+      assignee: "Admin"
+    }
+  }
 
   ngOnInit() {
     console.log("Initializing todos component..")
-    this.todos = this.todoService.getAllTodos();
+    this.todosList = this.todoService.getAllTodos();
+    this.initializeTodo();
   }
 
   addTodo() {
-    var newTodo = { text: this.tempText ,
-                    id : this.nextId()              
-    };
-    console.log("Adding new task  '" + newTodo.text);
-    this.todos.push(newTodo);
-    this.todoService.addTodo(newTodo);
+    if (this.todo != null || this.todo != undefined) {
+      console.log("Adding new task  '" + this.todo.task.name);
+      this.todo.id = this.nextId();
+      this.todosList.push(this.todo);
+      this.todoService.addTodo(this.todo);
+    }
   }
 
-  private nextId():number{
+  private nextId(): number {
+    if (this.todosList == null || this.todosList == undefined) {
+      return 1;
+    }
     var maxId = 0;
-    for (var i = 0; i < this.todos.length; i++) {
-      if (this.todos[i].id > maxId) {
-        maxId = this.todos[i].id;
+    for (var i = 0; i < this.todosList.length; i++) {
+      if (this.todosList[i].id > maxId) {
+        maxId = this.todosList[i].id;
       }
     }
     return ++maxId;
   }
 
   deleteTodo(toBeDeleted) {
-    for (var i = 0; i < this.todos.length; i++) {
-      if (this.todos[i].id == toBeDeleted.id) {
-        console.log("Task '" + this.todos[i].text + "' deleted ");
-        this.todos.splice(i, 1);
+    for (var i = 0; i < this.todosList.length; i++) {
+      if (this.todosList[i].id == toBeDeleted.id) {
+        console.log("Task '" + this.todosList[i].task.name + "' deleted ");
+        this.todosList.splice(i, 1);
       }
     }
-    this.todoService.addAllTodos(this.todos);
+    this.todoService.addAllTodos(this.todosList);
   }
 
   deleteAll() {
-    this.todos = [];
-    this.todoService.addAllTodos(this.todos);
+    this.todosList = [];
+    this.todoService.addAllTodos(this.todosList);
   }
 
   enableEditMode(todoTobeUpdated) {
-    this.appState = "EDIT";
-    this.tmpId = todoTobeUpdated.id;
-    this.tempText = todoTobeUpdated.text;
-    this.oldText = todoTobeUpdated.text;
+    this.appState = AppStatus.EDIT;
+    var tmp = todoTobeUpdated;
+    this.todo = tmp;
   }
 
   disableEditMode() {
-    this.appState = "DEFAULT";
+    this.appState = AppStatus.ADD;
+  }
+
+  refresh(){
+    this.ngOnInit();
   }
 
   isEditable(): boolean {
-    if (this.appState == "EDIT")
+    if (this.appState == AppStatus.EDIT)
       return true;
     else return false;
   }
 
-  isNotEmpty():boolean{
-    return ! (this.todos.length==0);
+  isNotEmpty(): boolean {
+    return !(this.todosList.length == 0);
   }
 
   updateTodo() {
-    for (var i = 0; i < this.todos.length; i++) {
-      if (this.todos[i].id == this.tmpId) {
-        console.log("Updating  '" + this.todos[i].text + "' to  "+ this.tempText);
-        this.todos[i].text = this.tempText;
-        console.log("updated to   '" + this.todos[i].text + "'");
+    var tmp = this.todo;
+    for (var i = 0; i < this.todosList.length; i++) {
+      if (this.todosList[i].id == tmp.id) {
+        console.log("Updating  '" + this.todosList[i].task.name);
+        this.todosList[i]= tmp;
       }
     }
-    this.todoService.addAllTodos(this.todos);
+    this.todoService.addAllTodos(this.todosList);
 
   }
 
+
+
+
 }
+
+enum AppStatus { DEFAULT, ADD, EDIT }

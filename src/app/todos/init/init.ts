@@ -2,30 +2,42 @@ import { Session } from "selenium-webdriver";
 
 export class Init {
 
-  constructor() { this.load()}
+  constructor() { this.load() }
 
-  load(){
+  load() {
 
-    if(localStorage.getItem("todos")=== null || 
-    localStorage.getItem("todos")== undefined){
-console.log("No Todos found!")
-       var todos =[
-        {text:'Do pranayam', id : 1 },
-        {text:'Wash cloths' , id : 2   } ,
-        {text:'Study for ssc cgl', id : 3    },
+    if (localStorage.getItem("todos") === null ||
+      localStorage.getItem("todos") == undefined) {
+      console.log("No Todos found!")
+      var todos = [
+        {
+          id : 1,
+          task: {
+            name: "Excersise"
+            , description: "Excerise is healthy habit"
+            , creationDate: new Date()
+            , targetDate: new Date()
+            , status: "NOT_STARTED"
+            , comments: "Planning to start today"
+
+          },
+          creator: "Admin",
+          assignee: "Admin"
+
+        }
       ];
       localStorage.setItem("todos", JSON.stringify(todos));
       console.log("Added default todos...")
-    }else{
+    } else {
       console.log("Todos Found!");
-      sessionStorage.setItem("AppName ","AngularBase");
+      sessionStorage.setItem("AppName ", "AngularBase");
     }
   }
 
-  reloadTodo(todos){
+  reloadTodo(todos) {
     localStorage.setItem("todos", JSON.stringify(todos));
   }
 
-      
+
 
 }

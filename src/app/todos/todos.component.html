@@ -1,14 +1,103 @@
 <div class="container">
 
-  <div *ngIf="!isEditable()" >
-    <h5>Add Todos</h5>
-    <form (submit)="addTodo()">
-      <input class="form-control" type="text" [(ngModel)]="tempText" name="todo">
+
+  <div *ngIf="isEditable()">
+    <h5>Edit Todos</h5>
+    <span (click)="disableEditMode()" class="btn btn-info">Switch To Add</span>
+    <form>
+
+      <div class="form-group">
+        <label for="taskName">Task Name</label>
+        <input id="taskName" class="form-control " type="text" [(ngModel)]="todo.task.name" name="taskName" aria-describedby="taskNameHelp">
+        <small id="taskNameHelp" class="form-text text-muted">Any Name you want to give</small>
+      </div>
+      <div class="form-group">
+        <label for="taskDesc">Task description</label>
+        <input id="taskDesc" class="form-control " type="text" [(ngModel)]="todo.task.description" name="taskDesc" aria-describedby="taskDescHelp">
+        <small id="taskDescHelp" class="form-text text-muted">Simple Description about the task</small>
+      </div>
+      <div class="form-group">
+        <label for="taskStartDate">Start Date</label>
+        <input id="taskStartDate" class="form-control " type="date" [(ngModel)]="todo.task.creationDate" name="taskStartDate" aria-describedby="startDateHelp">
+        <small id="startDateHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+      </div>
+      <div class="form-group">
+        <label for="taskEndDate">End Date</label>
+        <input id="taskName" class="form-control " type="date" [(ngModel)]="todo.task.targetDate" name="taskEndDate" aria-describedby="endDateHelp">
+        <small id="endDateHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+      </div>
+      <div class="form-group">
+        <label for="creator">Creator</label>
+        <input id="creator" class="form-control " type="text" [(ngModel)]="todo.creator" name="creator" aria-describedby="creatorHelp">
+        <small id="creatorHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+      </div>
+
+      <div class="form-group">
+        <label for="assignee">Assginee</label>
+        <input id="assignee" class="form-control " type="text" [(ngModel)]="todo.assignee" name="assignee" aria-describedby="assigneeHelp">
+        <small id="assigneeHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+      </div>
+      <div class="form-group">
+        <label for="comments">Comments</label>
+        <input id="comments" class="form-control " type="text" [(ngModel)]="todo.task.comments" name="comments" aria-describedby="commentsHelp">
+        <small id="commentsHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+      </div>
+      <input (click)="updateTodo()" class="btn" type="submit" name="submit" value="Save">
     </form>
-    <button class="btn btn-danger" *ngIf="isNotEmpty()" value="Delete All" (click)="deleteAll()">deleteAll</button>
+
   </div>
 
 
+
+
+
+  <div *ngIf="!isEditable()">
+    <h5>Add Todos</h5>
+    <form>
+
+      <div class="form-group">
+        <label for="taskName">Task Name</label>
+        <input id="taskName" class="form-control " type="text" [(ngModel)]="todo.task.name" name="taskName" aria-describedby="taskNameHelp">
+        <small id="taskNameHelp" class="form-text text-muted">Any Name you want to give</small>
+      </div>
+      <div class="form-group">
+        <label for="taskDesc">Task description</label>
+        <input id="taskDesc" class="form-control " type="text" [(ngModel)]="todo.task.description" name="taskDesc" aria-describedby="taskDescHelp">
+        <small id="taskDescHelp" class="form-text text-muted">Simple Description about the task</small>
+      </div>
+      <div class="form-group">
+        <label for="taskStartDate">Start Date</label>
+        <input id="taskStartDate" class="form-control " type="date" [(ngModel)]="todo.task.creationDate" name="taskStartDate" aria-describedby="startDateHelp">
+        <small id="startDateHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+      </div>
+      <div class="form-group">
+        <label for="taskEndDate">End Date</label>
+        <input id="taskName" class="form-control " type="date" [(ngModel)]="todo.task.targetDate" name="taskEndDate" aria-describedby="endDateHelp">
+        <small id="endDateHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+      </div>
+      <div class="form-group">
+        <label for="creator">Creator</label>
+        <input id="creator" class="form-control " type="text" [(ngModel)]="todo.creator" name="creator" aria-describedby="creatorHelp">
+        <small id="creatorHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+      </div>
+
+      <div class="form-group">
+        <label for="assignee">Assginee</label>
+        <input id="assignee" class="form-control " type="text" [(ngModel)]="todo.assignee" name="assignee" aria-describedby="assigneeHelp">
+        <small id="assigneeHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+      </div>
+      <div class="form-group">
+        <label for="comments">Comments</label>
+        <input id="comments" class="form-control " type="text" [(ngModel)]="todo.task.comments" name="comments" aria-describedby="commentsHelp">
+        <small id="commentsHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+      </div>
+      <input (click)="addTodo()" class="btn" type="submit" name="submit" value="Add">
+    </form>
+
+  </div>
+    <button class="btn btn-info"  value="Delete All" (click)="refresh()">refresh</button>
+    <button class="btn btn-danger" *ngIf="isNotEmpty()" value="Delete All" (click)="deleteAll()">deleteAll</button>
+  <!--
   <div *ngIf="isEditable()">
     <h5>Edit Todos </h5>
     <span class="btn btn-info" (click)="disableEditMode()">Switch to Add mode</span>
@@ -17,11 +106,18 @@
     </form>
     <button class="btn btn-danger" *ngIf="isNotEmpty()" value="Delete All" (click)="deleteAll()">deleteAll</button>
   </div>
-  <div class="container">
+  <div class="container"> -->
 
-    <div *ngFor='let todo of todos' class=" row list-group-item">
-      <span (click)="enableEditMode(todo)" class="col-sm-11">{{todo.text}}</span>
-      <input class=" col-sm-1 btn btn-danger btn-sm" type="button" name="delete" value="X" (click)="deleteTodo(todo)" />
-    </div>
+  <div (click)="enableEditMode(todo)" *ngFor='let todo of todosList' class=" row list-group-item">
+    <span class="col-sm-11">{{todo.task.name}}</span>
+    <span class="col-sm-11">{{todo.task.description}}</span>
+    <span class="col-sm-11">{{todo.task.creationDate| date :'dd/MM/yyyy hh:mm:ss a' }}</span>
+    <span class="col-sm-11">{{todo.task.targetDate | date :'dd/MM/yyyy hh:mm:ss a' }}</span>
+    <!-- <span class="col-sm-11">{{todo.task.status}}</span> -->
+    <span class="col-sm-11">{{todo.creator}}</span>
+    <span class="col-sm-11">{{todo.assignee}}</span>
+    <span class="col-sm-11">{{todo.task.comments}}</span>
+    <input class=" col-sm-1 btn btn-danger btn-sm" type="button" name="delete" value="X" (click)="deleteTodo(todo)" />
   </div>
+  <!-- </div> -->
 </div>
