@@ -10,6 +10,7 @@ import { TodoService } from 'app/todos/todo.service';
 })
 export class TodosComponent implements OnInit {
   todos;
+  tmpId : number;
   tempText: string = "Enter a new task";
   appState: string = "DEFAULT";
   oldText: string;
@@ -21,15 +22,27 @@ export class TodosComponent implements OnInit {
   }
 
   addTodo() {
-    var newTodo = { text: this.tempText };
+    var newTodo = { text: this.tempText ,
+                    id : this.nextId()              
+    };
     console.log("Adding new task  '" + newTodo.text);
     this.todos.push(newTodo);
     this.todoService.addTodo(newTodo);
   }
 
-  deleteTodo(object) {
+  private nextId():number{
+    var maxId = 0;
     for (var i = 0; i < this.todos.length; i++) {
-      if (this.todos[i].text == object) {
+      if (this.todos[i].id > maxId) {
+        maxId = this.todos[i].id;
+      }
+    }
+    return ++maxId;
+  }
+
+  deleteTodo(toBeDeleted) {
+    for (var i = 0; i < this.todos.length; i++) {
+      if (this.todos[i].id == toBeDeleted.id) {
         console.log("Task '" + this.todos[i].text + "' deleted ");
         this.todos.splice(i, 1);
       }
@@ -44,6 +57,7 @@ export class TodosComponent implements OnInit {
 
   enableEditMode(todoTobeUpdated) {
     this.appState = "EDIT";
+    this.tmpId = todoTobeUpdated.id;
     this.tempText = todoTobeUpdated.text;
     this.oldText = todoTobeUpdated.text;
   }
@@ -58,9 +72,13 @@ export class TodosComponent implements OnInit {
     else return false;
   }
 
+  isNotEmpty():boolean{
+    return ! (this.todos.length==0);
+  }
+
   updateTodo() {
     for (var i = 0; i < this.todos.length; i++) {
-      if (this.todos[i].text == this.oldText) {
+      if (this.todos[i].id == this.tmpId) {
         console.log("Updating  '" + this.todos[i].text + "' to  "+ this.tempText);
         this.todos[i].text = this.tempText;
         console.log("updated to   '" + this.todos[i].text + "'");

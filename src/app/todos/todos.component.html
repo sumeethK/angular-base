@@ -1,25 +1,27 @@
-<div *ngIf="!isEditable()">
-  <h3>Add Todos</h3>
-  <form (submit)="addTodo()">
-    <input type="text" [(ngModel)]="tempText" name="todo">
-  </form>
-  <button value="Delete All" (click)="deleteAll()">deleteAll</button>
+<div class="container">
+
+  <div *ngIf="!isEditable()" >
+    <h5>Add Todos</h5>
+    <form (submit)="addTodo()">
+      <input class="form-control" type="text" [(ngModel)]="tempText" name="todo">
+    </form>
+    <button class="btn btn-danger" *ngIf="isNotEmpty()" value="Delete All" (click)="deleteAll()">deleteAll</button>
+  </div>
+
+
+  <div *ngIf="isEditable()">
+    <h5>Edit Todos </h5>
+    <span class="btn btn-info" (click)="disableEditMode()">Switch to Add mode</span>
+    <form (submit)="updateTodo()">
+      <input class="form-control" type="text" [(ngModel)]="tempText" name="todo">
+    </form>
+    <button class="btn btn-danger" *ngIf="isNotEmpty()" value="Delete All" (click)="deleteAll()">deleteAll</button>
+  </div>
+  <div class="container">
+
+    <div *ngFor='let todo of todos' class=" row list-group-item">
+      <span (click)="enableEditMode(todo)" class="col-sm-11">{{todo.text}}</span>
+      <input class=" col-sm-1 btn btn-danger btn-sm" type="button" name="delete" value="X" (click)="deleteTodo(todo)" />
+    </div>
+  </div>
 </div>
-
-
-<div *ngIf="isEditable()">
-    <h3>Edit Todos </h3>
-    <span (click)="disableEditMode()">Switch to Add mode</span>
-  <form (submit)="updateTodo()">
-    <input type="text" [(ngModel)]="tempText" name="todo">
-  </form>
-  <button value="Delete All" (click)="deleteAll()">deleteAll</button>
-</div>
-
-<ul>
-  <li *ngFor='let todo of todos'>
-    <span (click)="enableEditMode(todo)">{{todo.text}}</span>
-    <input type="button" name="delete" value="X" (click)="deleteTodo(todo.text)" />
-  </li>
-
-</ul>

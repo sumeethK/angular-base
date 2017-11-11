@@ -10,9 +10,9 @@ export class Init {
     localStorage.getItem("todos")== undefined){
 console.log("No Todos found!")
        var todos =[
-        {text:'Do pranayam'},
-        {text:'Wash cloths'},
-        {text:'Study for ssc cgl'}
+        {text:'Do pranayam', id : 1 },
+        {text:'Wash cloths' , id : 2   } ,
+        {text:'Study for ssc cgl', id : 3    },
       ];
       localStorage.setItem("todos", JSON.stringify(todos));
       console.log("Added default todos...")
