@@ -5,15 +5,15 @@ import { Init } from 'app/todos/init/init';
 export class TodoService extends Init{
   constructor() { 
     super();
-    console.log("Todo Service initialized...");
+    console.log('Todo Service initialized...');
   }
 
   getAllTodos(){
-    return JSON.parse(localStorage.getItem("todos"));
+    return JSON.parse(localStorage.getItem('todos'));
   }
 
   addTodo(todo){
-    var todos = JSON.parse(localStorage.getItem("todos"));
+    var todos = JSON.parse(localStorage.getItem('todos'));
     if(todos!=null){
     todos.push(todo);
     }else{
@@ -26,11 +26,11 @@ export class TodoService extends Init{
 
    addAllTodos(newTodos){
      if(newTodos.length==0){
-       localStorage.removeItem("todos")
+       localStorage.removeItem('todos')
       }else{
         this.reloadTodo(newTodos);
       }
-      console.log(newTodos.length + " todo/s left");
+      console.log(newTodos.length + ' todo/s left');
   }
 
 }
