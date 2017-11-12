@@ -14,11 +14,10 @@ import { NgModule } from '@angular/core/src/metadata/ng_module';
 export class TodosComponent implements OnInit {
   todosList: TodoItem[];
   todo: TodoItem;
-  tmpId: number;
-  tempText: string;
   @Input() todoSearch;
   appState: AppStatus = AppStatus.ADD;
-  oldText: string;
+
+  
   constructor(private todoService: TodoService) { }
 
   initializeTodo() {
