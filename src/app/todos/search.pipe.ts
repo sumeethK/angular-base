@@ -6,7 +6,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class SearchPipe implements PipeTransform {
 
   transform(todos: any, name: any): any {
-  if(name === undefined){
+  if(name === undefined || name == null){
     return todos;
   }
 

@@ -14,4 +14,5 @@ import { SearchPipe } from 'app/todos/search.pipe';
   })
 export class AppComponent {
   title = 'app works!';
+  searchText;
 }

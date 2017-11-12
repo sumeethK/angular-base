@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { TodoService } from 'app/todos/todo.service';
 import { TodoItem } from 'app/todos/model/todo-item';
 import { Status } from 'app/todos/model/task-status';
@@ -15,49 +15,74 @@ export class TodosComponent implements OnInit {
   todosList: TodoItem[];
   todo: TodoItem;
   tmpId: number;
-  tempText: string ;
+  tempText: string;
+  @Input() todoSearch;
   appState: AppStatus = AppStatus.ADD;
   oldText: string;
-  constructor(private todoService: TodoService) {} 
+  constructor(private todoService: TodoService) { }
 
-  initializeTodo(){
-    this.todo =   {
-      id : this.nextId(),
+  initializeTodo() {
+    this.todo = {
+      id: this.nextId(),
       task: {
-        name: "Excersise"
-        , description: "Excerise is healthy habit"
+        name: 'Default'
+        , description: 'Default'
         , creationDate: new Date()
         , targetDate: new Date()
-        , status:  Status.IN_PROGRESS
-        , comments: "Planning to start today"
+        , status: Status.IN_PROGRESS
+        , comments: 'default'
 
       },
-      creator: "Admin",
-      assignee: "Admin"
-    }
+      creator: 'default',
+      assignee: 'default'
+    };
   }
 
   ngOnInit() {
-    console.log("Initializing todos component..")
+    console.log('Initializing todos component..');
     this.todosList = this.todoService.getAllTodos();
     this.initializeTodo();
   }
 
   addTodo() {
-    if (this.todo != null || this.todo != undefined) {
-      console.log("Adding new task  '" + this.todo.task.name);
+    if (this.todo != null || this.todo !== undefined) {
+      console.log('Adding new task  \'' + this.todo.task.name);
       this.todo.id = this.nextId();
-      this.todosList.push(this.todo);
-      this.todoService.addTodo(this.todo);
+      const tmp: TodoItem =this.createNewFrom(this.todo);
+      if (this.todosList == null) {
+        this.todosList = [];
+      }
+      this.todosList.push(tmp);
+      this.todoService.addTodo(tmp);
     }
   }
 
+
+  createNewFrom(newTodo): TodoItem{
+    const tmp: TodoItem =  {
+      id: newTodo.id,
+      task: {
+        name: newTodo.task.name
+        , description: newTodo.task.description
+        , creationDate: newTodo.task.creationDate
+        , targetDate: newTodo.task.targetDate
+        , status: newTodo.task.status
+        , comments: newTodo.task.comments
+
+      },
+      creator: newTodo.creator,
+      assignee: newTodo.assignee
+    };
+    return tmp;
+
+  }
+
   private nextId(): number {
-    if (this.todosList == null || this.todosList == undefined) {
+    if (this.todosList == null || this.todosList === undefined) {
       return 1;
     }
-    var maxId = 0;
-    for (var i = 0; i < this.todosList.length; i++) {
+    let maxId = 0;
+    for (let i = 0; i < this.todosList.length; i++) {
       if (this.todosList[i].id > maxId) {
         maxId = this.todosList[i].id;
       }
@@ -65,14 +90,31 @@ export class TodosComponent implements OnInit {
     return ++maxId;
   }
 
-  deleteTodo(toBeDeleted) {
-    for (var i = 0; i < this.todosList.length; i++) {
-      if (this.todosList[i].id == toBeDeleted.id) {
-        console.log("Task '" + this.todosList[i].task.name + "' deleted ");
+  deleteTodo(toBeDeed) {
+    for (let i = 0; i < this.todosList.length; i++) {
+      if (this.todosList[i].id === toBeDeed.id) {
+        console.log('Task \'' + this.todosList[i].task.name + '\' deed ');
         this.todosList.splice(i, 1);
+        break;
       }
     }
     this.todoService.addAllTodos(this.todosList);
+  }
+
+  done(toBeDone) {
+    for (let i = 0; i < this.todosList.length; i++) {
+      if (this.todosList[i].id === toBeDone.id) {
+        console.log('Task \'' + this.todosList[i].task.name + '\' comped ');
+        this.todosList[i].task.status = Status.COMPLETED;
+        break;
+      }
+    }
+    this.todoService.addAllTodos(this.todosList);
+  }
+  isDone(todo) {
+    if (todo.task.status === Status.COMPLETED) {
+      return true;
+    }else { return false; }
   }
 
   deleteAll() {
@@ -82,8 +124,7 @@ export class TodosComponent implements OnInit {
 
   enableEditMode(todoTobeUpdated) {
     this.appState = AppStatus.EDIT;
-    var tmp = todoTobeUpdated;
-    this.todo = tmp;
+    this.todo = todoTobeUpdated;
   }
 
   disableEditMode() {
@@ -91,26 +132,28 @@ export class TodosComponent implements OnInit {
     this.ngOnInit();
   }
 
-  refresh(){
+  refresh() {
     this.ngOnInit();
   }
 
   isEditable(): boolean {
-    if (this.appState == AppStatus.EDIT)
+    if (this.appState === AppStatus.EDIT) {
       return true;
-    else return false;
+    }else { return false; }
   }
 
   isNotEmpty(): boolean {
-    return !(this.todosList.length == 0);
+    if (this.todosList === undefined || this.todosList == null || this.todosList.length === 0) {
+      return false;
+    } else { return true; }
   }
 
   updateTodo() {
-    var tmp = this.todo;
-    for (var i = 0; i < this.todosList.length; i++) {
-      if (this.todosList[i].id == tmp.id) {
-        console.log("Updating  '" + this.todosList[i].task.name);
-        this.todosList[i]= tmp;
+    const tmp: TodoItem = this.todo;
+    for (let i = 0; i < this.todosList.length; i++) {
+      if (this.todosList[i].id === tmp.id) {
+        console.log('Updating  \'' + this.todosList[i].task.name);
+        this.todosList[i] = tmp;
       }
     }
     this.todoService.addAllTodos(this.todosList);
