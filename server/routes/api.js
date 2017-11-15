@@ -2,6 +2,11 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const TodoList = require('../models/todoList');
+const bodyParser = require('body-parser');
+const app = express();
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 
 const config = require('../config/database');
 
@@ -50,6 +55,7 @@ router.get('/todo/:id', function (req, res) {
 router.post('/todo', function(req, res){
     console.log('Post a todo '+ req.body.creator);
     var newTodo = new TodoList();
+    newTodo.creator  = req.body.creator;
     newTodo.task.name =  req.body.task.name;
     newTodo.task.description =  req.body.task.description;
     newTodo.task.creationDate  =req.body.task.creationDate;
@@ -59,7 +65,6 @@ router.post('/todo', function(req, res){
     newTodo.task.status  = req.body.task.status;
     newTodo.creator  = req.body.creator;
     newTodo.assignee  = req.body.assignee;
-    
     newTodo.save(function(err, insertedTodo){
         if (err){
             console.log('Error saving todo'+ e);

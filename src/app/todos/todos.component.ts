@@ -3,13 +3,14 @@ import { TodoService } from 'app/todos/todo.service';
 import { TodoItem } from 'app/todos/model/todo-item';
 import { Status } from 'app/todos/model/task-status';
 import { NgModule } from '@angular/core/src/metadata/ng_module';
+import { MongodbService } from 'app/todos/mongodb.service';
 
 
 @Component({
   selector: 'app-todos',
   templateUrl: './todos.component.html',
   styleUrls: ['./todos.component.css'],
-  providers: [TodoService],
+  providers: [MongodbService],
 })
 export class TodosComponent implements OnInit {
   todosList: TodoItem[];
@@ -17,12 +18,11 @@ export class TodosComponent implements OnInit {
   @Input() todoSearch;
   appState: AppStatus = AppStatus.ADD;
 
-  
-  constructor(private todoService: TodoService) { }
+  constructor(private _mongoService: MongodbService) { }
 
   initializeTodo() {
     this.todo = {
-      id: this.nextId(),
+      _id: 0,
       task: {
         name: 'Default'
         , description: 'Default'
@@ -39,27 +39,31 @@ export class TodosComponent implements OnInit {
 
   ngOnInit() {
     console.log('Initializing todos component..');
-    this.todosList = this.todoService.getAllTodos();
+    this._mongoService.getAllTodos()
+      .subscribe(resTodo => this.todosList = resTodo);
     this.initializeTodo();
   }
 
   addTodo() {
     if (this.todo != null || this.todo !== undefined) {
       console.log('Adding new task  \'' + this.todo.task.name);
-      this.todo.id = this.nextId();
-      const tmp: TodoItem =this.createNewFrom(this.todo);
+      this.todo._id = 0;
+      const tmp: TodoItem = this.createNewFrom(this.todo);
       if (this.todosList == null) {
         this.todosList = [];
       }
-      this.todosList.push(tmp);
-      this.todoService.addTodo(tmp);
+      this._mongoService.addTodo(tmp).subscribe(addedTodo => {
+        this.todosList.push(addedTodo);
+        console.log('Added new task  \'' + addedTodo.task.name);
+      });
+
     }
   }
 
 
-  createNewFrom(newTodo): TodoItem{
-    const tmp: TodoItem =  {
-      id: newTodo.id,
+  createNewFrom(newTodo): TodoItem {
+    const tmp: TodoItem = {
+      _id: newTodo._id,
       task: {
         name: newTodo.task.name
         , description: newTodo.task.description
@@ -76,49 +80,57 @@ export class TodosComponent implements OnInit {
 
   }
 
-  private nextId(): number {
-    if (this.todosList == null || this.todosList === undefined) {
-      return 1;
-    }
-    let maxId = 0;
-    for (let i = 0; i < this.todosList.length; i++) {
-      if (this.todosList[i].id > maxId) {
-        maxId = this.todosList[i].id;
-      }
-    }
-    return ++maxId;
-  }
+  // private nextId(): number {
+  //   if (this.todosList == null || this.todosList === undefined) {
+  //     return 1;
+  //   }
+  //   let maxId = 0;
+  //   for (let i = 0; i < this.todosList.length; i++) {
+  //     if (this.todosList[i]._id > maxId) {
+  //       maxId = this.todosList[i]._id;
+  //     }
+  //   }
+  //   return ++maxId;
+  // }
 
-  deleteTodo(toBeDeed) {
-    for (let i = 0; i < this.todosList.length; i++) {
-      if (this.todosList[i].id === toBeDeed.id) {
-        console.log('Task \'' + this.todosList[i].task.name + '\' deed ');
-        this.todosList.splice(i, 1);
-        break;
-      }
-    }
-    this.todoService.addAllTodos(this.todosList);
+  deleteTodo(toBeDeleted) {
+
+    this._mongoService.delete(toBeDeleted)
+      .subscribe(deletedTodo => {
+        for (let i = 0; i < this.todosList.length; i++) {
+          if (this.todosList[i]._id === toBeDeleted._id) {
+            console.log('Task \'' + this.todosList[i].task.name + '\' deed ');
+            this.todosList.splice(i, 1);
+            break;
+          }
+        }
+
+
+      })
+      ;
   }
 
   done(toBeDone) {
-    for (let i = 0; i < this.todosList.length; i++) {
-      if (this.todosList[i].id === toBeDone.id) {
-        console.log('Task \'' + this.todosList[i].task.name + '\' comped ');
-        this.todosList[i].task.status = Status.COMPLETED;
-        break;
-      }
-    }
-    this.todoService.addAllTodos(this.todosList);
+    // for (let i = 0; i < this.todosList.length; i++) {
+    //   if (this.todosList[i]._id === toBeDone._id) {
+    //     console.log('Task \'' + this.todosList[i].task.name + '\' comped ');
+    //     this.todosList[i].task.status = Status.COMPLETED;
+    //     break;
+    //   }
+    // }
+    toBeDone.task.status = Status.COMPLETED;
+    this.updateTodo(toBeDone);
+    // this._mongoService.addAllTodos(this.todosList);
   }
   isDone(todo) {
-    if (todo.task.status === Status.COMPLETED) {
+    if (todo.task.status == Status.COMPLETED ) {
       return true;
-    }else { return false; }
+    } else { return false; }
   }
 
   deleteAll() {
-    this.todosList = [];
-    this.todoService.addAllTodos(this.todosList);
+    // this.todosList = [];
+    // this._mongoService.addAllTodos(this.todosList);
   }
 
   enableEditMode(todoTobeUpdated) {
@@ -138,7 +150,7 @@ export class TodosComponent implements OnInit {
   isEditable(): boolean {
     if (this.appState === AppStatus.EDIT) {
       return true;
-    }else { return false; }
+    } else { return false; }
   }
 
   isNotEmpty(): boolean {
@@ -147,15 +159,24 @@ export class TodosComponent implements OnInit {
     } else { return true; }
   }
 
-  updateTodo() {
-    const tmp: TodoItem = this.todo;
-    for (let i = 0; i < this.todosList.length; i++) {
-      if (this.todosList[i].id === tmp.id) {
-        console.log('Updating  \'' + this.todosList[i].task.name);
-        this.todosList[i] = tmp;
-      }
+  updateTodo(todoToBeUpdated) {
+    let tmp: TodoItem;
+    if (todoToBeUpdated == null && todoToBeUpdated === undefined) {
+      tmp = this.todo;
+    } else {
+      tmp = todoToBeUpdated;
     }
-    this.todoService.addAllTodos(this.todosList);
+    this._mongoService.updateTodo(tmp)
+      .subscribe(updatedTodo => {
+        for (let i = 0; i < this.todosList.length; i++) {
+          if (this.todosList[i]._id === tmp._id) {
+            console.log('Updated successfully   \'' + this.todosList[i].task.name);
+            this.todosList[i] = tmp;
+            break;
+          }
+        }
+      })
+      ;
 
   }
 

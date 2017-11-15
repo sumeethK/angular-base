@@ -6,6 +6,8 @@ import { HttpModule } from '@angular/http';
 import { AppComponent } from './app.component';
 import { TodosComponent } from 'app/todos/todos.component';
 import { SearchPipe } from 'app/todos/search.pipe';
+import { AppRoutingModule } from 'app/app-routing.module';
+import { Http } from '@angular/http/src/http';
 
 
 @NgModule({
@@ -17,7 +19,8 @@ import { SearchPipe } from 'app/todos/search.pipe';
   imports: [
     BrowserModule,
     FormsModule,
-    HttpModule
+    HttpModule,
+    AppRoutingModule
   ],
   providers: [],
   bootstrap: [AppComponent]
